@@ -1,6 +1,23 @@
 <resources>
     <string name="app_name">Kotzy</string>
     <string name="welcome_msg">Welcome to Kotzy!</string>
-    <string name="new_game">New Game</string>
-    <string name="select_game">Select Game</string>
+
+    <!-- Main Menu Buttons -->
+    <string name="new_game_button">New Game</string>
+    <string name="preferences_button">Preferences</string>
+
+    <!-- Activity Titles -->
+    <string name="title_activity_select_game">Select Game</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preferences Buttons -->
+    <string name="save_preferences">Save</string>
+
+    <!-- Default values -->
+    <string name="default_user_name">Default User</string>
+    <string name="user_name_preference_prompt">Name:</string>
+
+    <!-- Preferences file key -->
+    <string name="preference_file_key">eu.bunburya.kotzy.PREFERENCE_FILE_KEY</string>
+
 </resources>

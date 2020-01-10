@@ -13,7 +13,7 @@ class PlayerIterator(val players: PlayerIterable): Iterator<Pair<String, Player>
     }
 }
 
-class PlayerIterable(val game: Game, val initialPlayerNames: Iterable<String>): Iterable<Pair<String, Player>> {
+class PlayerIterable(val gameManager: GameManager, val initialPlayerNames: Iterable<String>): Iterable<Pair<String, Player>> {
 
     private val playerMap: HashMap<String, Player> = hashMapOf()
     val playerNames: MutableList<String> = mutableListOf()
@@ -28,7 +28,7 @@ class PlayerIterable(val game: Game, val initialPlayerNames: Iterable<String>): 
 
     fun addPlayer(name: String) {
         if (name in playerMap) throw DuplicateNameError("$name is used more than once.")
-        playerMap[name] = Player(game, name)
+        playerMap[name] = Player(gameManager, name)
         playerNames.add(name)
     }
 

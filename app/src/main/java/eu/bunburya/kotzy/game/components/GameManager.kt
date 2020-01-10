@@ -4,7 +4,7 @@ import eu.bunburya.kotzy.game.rules.ScoringRules
 
 class GameInProgressError(msg: String): Exception(msg)
 
-class Game (val rules: ScoringRules, private val initialPlayerNames: Iterable<String>) {
+class GameManager (val rules: ScoringRules, private val initialPlayerNames: Iterable<String>) {
 
     private val players = PlayerIterable(this, initialPlayerNames)
     private var inProgress = false

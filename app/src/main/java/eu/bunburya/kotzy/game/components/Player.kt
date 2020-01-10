@@ -1,8 +1,8 @@
 package eu.bunburya.kotzy.game.components
 
-class Player(val game: Game, val name: String) {
+class Player(val gameManager: GameManager, val name: String) {
 
-    val scoreCard = ScoreCard(game.rules)
+    val scoreCard = ScoreCard(gameManager.rules)
     var rolled = false
 
 }
