@@ -3,6 +3,6 @@ package eu.bunburya.kotzy.game.components
 class Player(val gameManager: GameManager, val name: String) {
 
     val scoreCard = ScoreCard(gameManager.rules)
-    var rolled = false
+    var rollsThisTurn = 0
 
 }

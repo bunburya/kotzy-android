@@ -75,7 +75,7 @@ abstract class ScoringRules {
     abstract val lowerCategories: List<LowerCategory>
     open val numDice: Int = 5
     open val diceSides: Int = 6
-    open val numRolls = 3
+    open val maxRollsPerTurn = 3
     open val categories get() = upperCategories + lowerCategories
     open val upperBonus: Int? = null
     open val requiredUpperScoreForBonus: Int? = null

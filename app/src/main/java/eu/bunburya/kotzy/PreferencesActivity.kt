@@ -5,14 +5,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.PreferenceFragmentCompat
 
-class SettingsActivity : AppCompatActivity() {
+class PreferencesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_activity)
+        setContentView(R.layout.preferences_activity)
 
+        // TODO:  Just read from preferences here, instead of sending message from MainActivity
         val userName = intent.getStringExtra(SETTINGS_USER_NAME)
         findViewById<EditText>(R.id.userNameEditText).setText(userName)
 

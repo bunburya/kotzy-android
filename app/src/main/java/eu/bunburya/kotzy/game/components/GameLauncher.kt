@@ -8,8 +8,8 @@ class GameLauncher {
 
     val supportedRules: List<String> get() = ruleManager.supportedRules
 
-    fun newGame(rules: String): GameManager {
-        return GameManager(ruleManager.getRules(rules), listOf("Alan"))
+    fun newGame(rules: String, names: List<String>): GameManager {
+        return GameManager(ruleManager.getRules(rules), names)
     }
 
 }
