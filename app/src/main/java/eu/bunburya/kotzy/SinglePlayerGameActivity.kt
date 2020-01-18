@@ -5,20 +5,27 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TableRow
+import android.widget.TextView
 import eu.bunburya.kotzy.controllers.DiceController
 import eu.bunburya.kotzy.controllers.DieState
 import eu.bunburya.kotzy.controllers.GameController
 import eu.bunburya.kotzy.game.components.Die
 import eu.bunburya.kotzy.game.components.GameLauncher
 import eu.bunburya.kotzy.game.components.GameManager
+import kotlinx.android.synthetic.main.activity_single_player_game.*
+
+const val CATEGORY_TEXT_SIZE: Float = 22f
 
 class SinglePlayerGameActivity : AppCompatActivity() {
 
-    val gameController = GameController(this)
-    val diceController = DiceController(this, gameController)
+    val gameController: GameController by lazy { GameController(this) }
+    val diceController: DiceController by lazy { DiceController(this, gameController) }
     val categoryToView: MutableMap<String, View> = mutableMapOf()
     lateinit var dieImages: Map<Pair<Int, DieState>, Bitmap>
 
@@ -44,14 +51,43 @@ class SinglePlayerGameActivity : AppCompatActivity() {
         val playerName = intent.getStringExtra(GAME_PLAYER_NAME)
         gameController.createGame(rules, listOf(playerName))
         drawDice()
+        drawScoreCard()
 
     }
 
     fun drawScoreCard() {
-        TODO()
+        var categoryRow: TableRow
+        var categoryDesc: TextView
+        var categoryScore: TextView
+        for (c in gameController.categoryList) {
+            // FIXME:  Layout is broken
+            categoryDesc = TextView(this).apply {
+                text = c
+                textSize = CATEGORY_TEXT_SIZE
+                //layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                //    LinearLayout.LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.START }
+            }
+            categoryScore = TextView(this).apply {
+                text = (gameController.getScore(c)?.toString())?: ""
+                textSize = CATEGORY_TEXT_SIZE
+                //layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                //    LinearLayout.LayoutParams.WRAP_CONTENT).apply { gravity = Gravity.END }
+            }
+            categoryRow = TableRow(this).apply {
+                addView(categoryDesc)
+                addView(categoryScore)
+                setHorizontalGravity(Gravity.CENTER_HORIZONTAL)
+                setOnClickListener(View.OnClickListener {
+                    // FIXME:  Get this to work properly
+                    categoryScore.text = gameController.setScore(c).toString()
+                })
+            }
+            categoryToView[c] = categoryRow
+            scoreCardTableLayout.addView(categoryRow)
+        }
     }
 
-    fun getDieImage(die: Die): Bitmap? = dieImages!![Pair(die.value, diceController.getDieState(die))]
+    fun getDieImage(die: Die): Bitmap? = dieImages[Pair(die.value, diceController.getDieState(die))]
 
     fun drawDieButton(die: Die, button: ImageButton) {
         button.setImageBitmap(getDieImage(die))
@@ -62,7 +98,7 @@ class SinglePlayerGameActivity : AppCompatActivity() {
     fun drawDice() {
         val buttonLayout = findViewById(R.id.gameDiceLayout) as LinearLayout
         var button: ImageButton
-        for (die in diceController.dice!!) {
+        for (die in diceController.dice) {
             button = ImageButton(this)
             drawDieButton(die, button)
             buttonLayout.addView(button)

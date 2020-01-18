@@ -9,7 +9,7 @@ class PlayerIterator(val players: PlayerIterable): Iterator<Pair<String, Player>
         val name = players.getPlayerNameByIndex(index)
         val player = players.getPlayerByIndex(index)
         index++
-        return Pair(name, player)
+        return Pair(name, player!!)
     }
 }
 
@@ -34,9 +34,9 @@ class PlayerIterable(val gameManager: GameManager, val initialPlayerNames: Itera
 
     fun getPlayerNameByIndex(i: Int): String = playerNames[i]
 
-    fun getPlayerByIndex(i:Int): Player = playerMap[getPlayerNameByIndex(i)]!!
+    fun getPlayerByIndex(i:Int): Player? = playerMap[getPlayerNameByIndex(i)]
 
-    fun getPlayerByName(name: String): Player = playerMap[name]!!
+    fun getPlayerByName(name: String): Player? = playerMap[name]
 
     fun setCurrentPlayer(name: String) {
         currentPlayerNameIndex = playerNames.indexOf(name)

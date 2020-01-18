@@ -8,6 +8,11 @@ class AlreadyScoredError(msg: String): Exception(msg)
 
 class ScoreSection(private val categories: List<Category>): HashMap<Category, Int?>() {
     init {
+        // NOTE:  When fetching score, null could indicate either that a category hasn't been scored
+        // yet or that a category is not found.  Consider whether this could be a problem (ie, do
+        // we need a way to differentiate between these situations).  An alternative would be to
+        // initialise all values to -1, so -1 means not scored and null means not found.  Then
+        // in totalScore, instead of i ?: 0 in the lambda, we would do max(i, 0)
         for (c in this.categories) this[c] = null
     }
 

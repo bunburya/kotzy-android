@@ -1,8 +1,10 @@
 package eu.bunburya.kotzy.game.components
 
+import eu.bunburya.kotzy.game.rules.Category
 import eu.bunburya.kotzy.game.rules.ScoringRules
 
 class GameInProgressError(msg: String): Exception(msg)
+class NoSuchPlayerError(msg: String): Exception(msg)
 
 class GameManager (val rules: ScoringRules, private val initialPlayerNames: Iterable<String>) {
 
@@ -18,6 +20,7 @@ class GameManager (val rules: ScoringRules, private val initialPlayerNames: Iter
     val currentPlayerName: String get() = players.currentPlayerName
     val currentPlayer: Player get() = players.currentPlayer
     val numPlayers: Int get() = players.numPlayers
+
     fun nextPlayer(): Pair<String, Player> {
         val result = players.nextPlayer()
         currentPlayer.rollsThisTurn = 0
@@ -27,6 +30,18 @@ class GameManager (val rules: ScoringRules, private val initialPlayerNames: Iter
     fun addPlayer(name: String) {
         if (inProgress) throw GameInProgressError("Cannot add players when game is in progress.")
         players.addPlayer(name)
+    }
+
+    fun getPlayer(name: String): Player {
+        val player = players.getPlayerByName(name)
+        if (player == null) throw NoSuchPlayerError("No player $name.")
+        else return player
+    }
+
+    fun setScore(category: Category): Int {
+        val score = rules.calculateScore(dice, category)
+        currentPlayer.scoreCard.setScore(category, score)
+        return score
     }
 
     fun startGame() {
