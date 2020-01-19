@@ -1,10 +1,13 @@
 package eu.bunburya.kotzy.controllers
 
 import androidx.appcompat.app.AppCompatActivity
+import eu.bunburya.kotzy.game.components.AlreadyScoredError
 import eu.bunburya.kotzy.game.components.GameLauncher
 import eu.bunburya.kotzy.game.components.GameManager
 import eu.bunburya.kotzy.game.components.Player
 import eu.bunburya.kotzy.game.rules.Category
+
+class CategoryAlreadyScoredError(msg: String?): Exception(msg)
 
 class GameController (val activity: AppCompatActivity) {
 
@@ -44,6 +47,14 @@ class GameController (val activity: AppCompatActivity) {
     fun setScore(category: String): Int {
         val c = categoryMap[category]
         if (c == null) return 0
-        else return gameManager.setScore(c)
+        else {
+            try {
+                val score = gameManager.setScore(c)
+                gameManager.nextPlayer()
+                return score
+            } catch (e: AlreadyScoredError) {
+                throw CategoryAlreadyScoredError(e.message)
+            }
+        }
     }
 }

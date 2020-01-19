@@ -7,17 +7,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.TableRow
-import android.widget.TextView
+import android.widget.*
+import eu.bunburya.kotzy.controllers.CategoryAlreadyScoredError
 import eu.bunburya.kotzy.controllers.DiceController
 import eu.bunburya.kotzy.controllers.DieState
 import eu.bunburya.kotzy.controllers.GameController
 import eu.bunburya.kotzy.game.components.Die
-import eu.bunburya.kotzy.game.components.GameLauncher
-import eu.bunburya.kotzy.game.components.GameManager
 import kotlinx.android.synthetic.main.activity_single_player_game.*
 
 const val CATEGORY_TEXT_SIZE: Float = 22f
@@ -26,7 +21,7 @@ class SinglePlayerGameActivity : AppCompatActivity() {
 
     val gameController: GameController by lazy { GameController(this) }
     val diceController: DiceController by lazy { DiceController(this, gameController) }
-    val categoryToView: MutableMap<String, View> = mutableMapOf()
+    val categoryToRow: MutableMap<String, View> = mutableMapOf()
     lateinit var dieImages: Map<Pair<Int, DieState>, Bitmap>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,16 +31,22 @@ class SinglePlayerGameActivity : AppCompatActivity() {
         dieImages = mapOf(
             Pair(1, DieState.UNSELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_1),
             Pair(1, DieState.SELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_1_invert),
+            Pair(1, DieState.INACTIVE) to BitmapFactory.decodeResource(resources, R.drawable.dice_1),
             Pair(2, DieState.UNSELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_2),
             Pair(2, DieState.SELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_2_invert),
+            Pair(2, DieState.INACTIVE) to BitmapFactory.decodeResource(resources, R.drawable.dice_2),
             Pair(3, DieState.UNSELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_3),
             Pair(3, DieState.SELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_3_invert),
+            Pair(3, DieState.INACTIVE) to BitmapFactory.decodeResource(resources, R.drawable.dice_3),
             Pair(4, DieState.UNSELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_4),
             Pair(4, DieState.SELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_4_invert),
+            Pair(4, DieState.INACTIVE) to BitmapFactory.decodeResource(resources, R.drawable.dice_4),
             Pair(5, DieState.UNSELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_5),
             Pair(5, DieState.SELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_5_invert),
+            Pair(5, DieState.INACTIVE) to BitmapFactory.decodeResource(resources, R.drawable.dice_5),
             Pair(6, DieState.UNSELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_6),
-            Pair(6, DieState.SELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_6_invert)
+            Pair(6, DieState.SELECTED) to BitmapFactory.decodeResource(resources, R.drawable.dice_6_invert),
+            Pair(6, DieState.INACTIVE) to BitmapFactory.decodeResource(resources, R.drawable.dice_6)
         )
         val rules = intent.getStringExtra(GAME_RULESET)
         val playerName = intent.getStringExtra(GAME_PLAYER_NAME)
@@ -77,22 +78,27 @@ class SinglePlayerGameActivity : AppCompatActivity() {
                 addView(categoryDesc)
                 addView(categoryScore)
                 setHorizontalGravity(Gravity.CENTER_HORIZONTAL)
-                setOnClickListener(View.OnClickListener {
-                    // FIXME:  Get this to work properly
-                    categoryScore.text = gameController.setScore(c).toString()
-                })
+                setOnClickListener(CategoryOnClickListener(gameController, categoryScore, c))
             }
-            categoryToView[c] = categoryRow
+            categoryToRow[c] = categoryRow
             scoreCardTableLayout.addView(categoryRow)
         }
     }
 
     fun getDieImage(die: Die): Bitmap? = dieImages[Pair(die.value, diceController.getDieState(die))]
+    fun getDieImage(pair: Pair<Int, DieState>): Bitmap? = dieImages[pair]
 
-    fun drawDieButton(die: Die, button: ImageButton) {
-        button.setImageBitmap(getDieImage(die))
+    fun drawDieButton(button: ImageButton) {
+        Log.d("SinglePlayerGame", "drawDieButton called")
+        button.setImageBitmap(getDieImage(diceController.getDiePair(button)))
         // TODO:  Android >= 16 uses setBackground instead; find a way to work with both.
         button.setBackgroundDrawable(null)
+    }
+
+    fun onDieClick(view: View) {
+        Log.d("SinglePlayerGame", "onDieClick called")
+        diceController.holdDie(view as ImageButton)
+
     }
 
     fun drawDice() {
@@ -100,8 +106,27 @@ class SinglePlayerGameActivity : AppCompatActivity() {
         var button: ImageButton
         for (die in diceController.dice) {
             button = ImageButton(this)
-            drawDieButton(die, button)
+            diceController.registerDie(button, die)
+            button.setOnClickListener(View.OnClickListener { onDieClick(it) })
+            drawDieButton(button)
             buttonLayout.addView(button)
+        }
+    }
+
+    fun onRollClick(view: View) {
+        TODO()
+    }
+
+}
+
+private class CategoryOnClickListener(val gameController: GameController, val scoreView: TextView,
+                              val category: String): View.OnClickListener {
+
+    override fun onClick(v: View?) {
+        try {
+            scoreView.text = gameController.setScore(category).toString()
+        } catch (e: CategoryAlreadyScoredError) {
+            return
         }
     }
 

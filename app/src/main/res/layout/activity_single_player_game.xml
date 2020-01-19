@@ -11,8 +11,20 @@
         android:id="@+id/scoreCardTableLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="16dp" />
+        app:layout_constraintBottom_toTopOf="@+id/rollButton"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <Button
+        android:id="@+id/rollButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:onClick="onRollClick"
+        android:text="@string/rollButtonText"
+        app:layout_constraintBottom_toTopOf="@+id/gameDiceLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
         android:id="@+id/gameDiceLayout"
